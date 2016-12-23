@@ -27,10 +27,13 @@ private:
   void handleSend(const boost::system::error_code& ec,
                   std::size_t bytes_transferred);
 
-  void handleReceive(std::shared_ptr<boost::asio::ip::udp::endpoint> sender_ptr,
+  void handleReceive(boost::asio::ip::udp::socket& socket,
+                     std::shared_ptr<boost::asio::ip::udp::endpoint> sender_ptr,
                      std::shared_ptr<std::array<unsigned char, 128> > buffer,
                      const boost::system::error_code& ec,
                      std::size_t bytes_transferred);
 
-  void start_receive();
+  void start_receive(boost::asio::ip::udp::socket& socket);
+
+  void stop_listening(boost::asio::io_service& service);
 };
