@@ -20,7 +20,7 @@ using boost::asio::ip::address_v4;
 // TODO: Namespace
 
 address_v4 kSubnet(0xFFFFFF00);
-address_v4 kLocalhost(0xC0A80102);
+address_v4 kLocalhost(0xC0A8007F);
 
 int main() {
 	boost::asio::io_service service;
