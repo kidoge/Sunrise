@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 #include "Packet.h"
 
 std::vector<unsigned char> Packet::getBytes() {

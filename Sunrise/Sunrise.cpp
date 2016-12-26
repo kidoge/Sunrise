@@ -1,9 +1,6 @@
 // Sunrise.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
-
-
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/asio.hpp>
 #include <vector>
