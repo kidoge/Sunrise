@@ -13,7 +13,7 @@ namespace LifxControlLibTests {
 	TEST_CLASS(HeaderContentTests) {
 	public:
 
-		TEST_METHOD(TestHeader) {
+		TEST_METHOD(TestFullHeader) {
 			uint8_t expectedBytes[] {
 				/*origin indicator, tagged, addressable, protocol*/ 0x00, 0x34,
 				/*source*/ 0x00, 0x21, 0x43, 0x00,
@@ -29,9 +29,7 @@ namespace LifxControlLibTests {
 			header.useTarget = true;
 			header.source = 0x432100;
 			header.target = 0x1234;
-			header.ack_required = 0;
 			header.res_required = 1;
-			header.sequence = 0;
 			header.messageType = 0xF00D;
 			
 			std::vector<uint8_t> headerBytes = header.getBytes();
