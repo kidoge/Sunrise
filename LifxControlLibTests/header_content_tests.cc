@@ -26,13 +26,13 @@ namespace LifxControlLibTests {
 				/*reserved*/ 0x00, 0x00,
 			};
 			HeaderContent header;
-			header.useTarget = true;
-			header.source = 0x432100;
-			header.target = 0x1234;
-			header.res_required = 1;
-			header.messageType = 0xF00D;
+      header.set_use_target(true);
+      header.set_source(0x432100);
+			header.set_target(0x1234);
+			header.set_res_required(true);
+			header.set_message_type(0xF00D);
 			
-			std::vector<uint8_t> headerBytes = header.getBytes();
+			std::vector<uint8_t> headerBytes = header.GetBytes();
 			Assert::AreEqual(headerBytes.size(), sizeof(expectedBytes));
 			for (int idx = 0; idx < headerBytes.size(); ++idx) {
 				Assert::AreEqual(headerBytes[idx], expectedBytes[idx]);

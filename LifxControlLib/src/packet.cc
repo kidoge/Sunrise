@@ -7,7 +7,7 @@ Packet::Packet(std::shared_ptr<HeaderContent>header_ptr,
 }
 
 std::vector<uint8_t> Packet::getBytes() {
-  std::vector<uint8_t> headerBytes = header->getBytes();
+  std::vector<uint8_t> headerBytes = header->GetBytes();
   std::vector<uint8_t> bytes;
 
   // Calculate packet size, including 2 bytes for packet size.
