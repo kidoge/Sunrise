@@ -13,7 +13,7 @@ using boost::asio::ip::udp;
 size_t createGreen(boost::array<char, 128>& buffer) {
   // Origin Indicator
   char bytes[]{ /*message size*/0x31, 0x00,
-    /*origin indicator, tagged, addressable, 4 bits of protocol*/0x00,
+    /*origin indicator, tagged, addressable, 4 bits of protocol*/0x00, 
     /*rest of protocol*/0x34,
     /*source*/0x00, 0x12, 0x34, 0x00, 0x00, 0x00,
     /*target*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -26,7 +26,7 @@ size_t createGreen(boost::array<char, 128>& buffer) {
     /*Reserve (Payload start)*/0x00,
     /*HSB*/0x55, 0x55, 0xFF,
     /*saturation*/0xFF,
-    /*brightness*/0x00, 0x40,
+    /*brightness*/0x01, 0x00,
     /*kelvin*/0xAC, 0x0D,
     /*transition*/ 0x00, 0x08, 0x00, 0x00};
   char *c0 = buffer.data();

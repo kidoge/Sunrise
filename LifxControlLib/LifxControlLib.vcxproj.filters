@@ -30,6 +30,9 @@
     <ClInclude Include="LifxControl\Packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LifxControl\HeaderContent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Light.cpp">
@@ -39,6 +42,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Packet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HeaderContent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
