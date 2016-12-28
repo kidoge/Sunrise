@@ -3,8 +3,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/array.hpp>
 
-#include "Light.h"
-#include "LightEnumerator.h"
+#include "light.h"
+#include "light_enumerator.h"
 
 using boost::posix_time::time_duration;
 using boost::asio::ip::address_v4;

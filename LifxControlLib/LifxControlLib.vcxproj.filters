@@ -21,30 +21,30 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LifxControl\Light.h">
+    <ClInclude Include="LifxControl\header_content.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LifxControl\LightEnumerator.h">
+    <ClInclude Include="LifxControl\light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LifxControl\Packet.h">
+    <ClInclude Include="LifxControl\light_enumerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LifxControl\HeaderContent.h">
+    <ClInclude Include="LifxControl\packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Light.cpp">
+    <ClCompile Include="src\header_content.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\LightEnumerator.cpp">
+    <ClCompile Include="src\light.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Packet.cpp">
+    <ClCompile Include="src\light_enumerator.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\HeaderContent.cpp">
+    <ClCompile Include="src\packet.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

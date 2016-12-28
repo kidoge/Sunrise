@@ -5,8 +5,8 @@
 #include <boost/asio.hpp>
 #include <vector>
 
-#include <LifxControl/Light.h>
-#include <LifxControl/LightEnumerator.h>
+#include <LifxControl/light.h>
+#include <LifxControl/light_enumerator.h>
 
 using std::vector;
 

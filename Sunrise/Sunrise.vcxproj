@@ -152,12 +152,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sunrise.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\LifxControlLib\LifxControlLib.vcxproj">
       <Project>{01654362-0205-4ce0-acb1-bf68f205398e}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sunrise.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

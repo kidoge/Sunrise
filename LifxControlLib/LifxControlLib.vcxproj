@@ -134,17 +134,17 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LifxControl\HeaderContent.h" />
-    <ClInclude Include="LifxControl\Light.h" />
-    <ClInclude Include="LifxControl\LightEnumerator.h" />
-    <ClInclude Include="LifxControl\Packet.h" />
+    <ClInclude Include="LifxControl\header_content.h" />
+    <ClInclude Include="LifxControl\light.h" />
+    <ClInclude Include="LifxControl\light_enumerator.h" />
+    <ClInclude Include="LifxControl\packet.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\HeaderContent.cpp" />
-    <ClCompile Include="src\Light.cpp" />
-    <ClCompile Include="src\LightEnumerator.cpp" />
-    <ClCompile Include="src\Packet.cpp" />
+    <ClCompile Include="src\header_content.cc" />
+    <ClCompile Include="src\light.cc" />
+    <ClCompile Include="src\light_enumerator.cc" />
+    <ClCompile Include="src\packet.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
-#include "Packet.h"
-#include "HeaderContent.h"
+#include "packet.h"
+#include "header_content.h"
 
 Packet::Packet(std::shared_ptr<HeaderContent>header_ptr,
                std::shared_ptr<std::vector<uint8_t> > payload_ptr) :

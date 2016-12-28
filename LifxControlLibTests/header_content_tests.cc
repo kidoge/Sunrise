@@ -3,9 +3,9 @@
 
 #include "CppUnitTest.h"
 
-#include <LifxControl/Packet.h>
-#include <LifxControl/HeaderContent.h>
-#include <LifxControl/Light.h>
+#include <LifxControl/packet.h>
+#include <LifxControl/header_content.h>
+#include <LifxControl/light.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
