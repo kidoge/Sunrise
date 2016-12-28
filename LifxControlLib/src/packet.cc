@@ -1,17 +1,17 @@
 #include "packet.h"
 #include "header_content.h"
 
-Packet::Packet(std::shared_ptr<HeaderContent>header_ptr,
-               std::shared_ptr<std::vector<uint8_t> > payload_ptr) :
-                 header(header_ptr), payload(payload_ptr) {
+Packet::Packet(std::shared_ptr<HeaderContent>header,
+               std::shared_ptr<std::vector<uint8_t> > payload) :
+                 header_(header), payload_(payload) {
 }
 
 std::vector<uint8_t> Packet::getBytes() {
-  std::vector<uint8_t> headerBytes = header->GetBytes();
+  std::vector<uint8_t> headerBytes = header_->GetBytes();
   std::vector<uint8_t> bytes;
 
   // Calculate packet size, including 2 bytes for packet size.
-  uint16_t packet_size = headerBytes.size() + payload->size() + 2;
+  uint16_t packet_size = headerBytes.size() + payload_->size() + 2;
   bytes.reserve(packet_size);
 
   // Insert packet size t othe front of the header, in little endian.
@@ -20,7 +20,7 @@ std::vector<uint8_t> Packet::getBytes() {
 
   // Insert header and payload data.
   bytes.insert(bytes.end(), headerBytes.begin(), headerBytes.end());
-  bytes.insert(bytes.end(), payload->begin(), payload->end());
+  bytes.insert(bytes.end(), payload_->begin(), payload_->end());
 
   return bytes;
 }
