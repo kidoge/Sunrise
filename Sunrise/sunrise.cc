@@ -22,7 +22,7 @@ address_v4 kLocalhost(0xC0A8007F);
 int main() {
 	boost::asio::io_service service;
 	LightEnumerator enumerator(service, kLocalhost, kSubnet);
-	vector<Light> lights = enumerator.get_lights(seconds(5));
+	vector<Light> lights = enumerator.GetLights(seconds(5));
 	
 	std::cout << "Total lights: " << lights.size() << std::endl;
 

@@ -16,24 +16,24 @@ public:
                   const boost::asio::ip::address_v4& localhost_addr,
                   const boost::asio::ip::address_v4& subnet_mask);
 
-  std::vector<Light> get_lights(const boost::posix_time::time_duration& timeout) const;
+  std::vector<Light> GetLights(const boost::posix_time::time_duration& timeout) const;
 
 private:
-  std::vector<Light> lights;
-  std::mutex lock;
-  boost::asio::ip::address_v4 localhost_addr;
-  boost::asio::ip::address_v4 subnet_mask;
+  std::vector<Light> lights_;
+  std::mutex lock_;
+  boost::asio::ip::address_v4 localhost_addr_;
+  boost::asio::ip::address_v4 subnet_mask_;
 
-  void handleSend(const boost::system::error_code& ec,
+  void HandleSend(const boost::system::error_code& ec,
                   std::size_t bytes_transferred);
 
-  void handleReceive(boost::asio::ip::udp::socket& socket,
+  void HandleReceive(boost::asio::ip::udp::socket& socket,
                      std::shared_ptr<boost::asio::ip::udp::endpoint> sender_ptr,
                      std::shared_ptr<std::array<unsigned char, 128> > buffer,
                      const boost::system::error_code& ec,
                      std::size_t bytes_transferred);
 
-  void start_receive(boost::asio::ip::udp::socket& socket);
+  void StartReceive(boost::asio::ip::udp::socket& socket);
 
-  void stop_listening(boost::asio::io_service& service);
+  void StopListening(boost::asio::io_service& service);
 };
