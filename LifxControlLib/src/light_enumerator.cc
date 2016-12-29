@@ -5,39 +5,48 @@
 
 #include "light.h"
 #include "light_enumerator.h"
+#include "packet.h"
+#include "header_content.h"
+#include "message_types.h"
 
 using boost::posix_time::time_duration;
 using boost::asio::ip::address_v4;
 using boost::asio::ip::udp;
 
 using lifx::LightEnumerator;
+using lifx::Packet;
+using lifx::HeaderContent;
 using lifx::Light;
+
+using std::shared_ptr;
 
 size_t CreateGreen(boost::array<char, 128>& buffer) {
   // Origin Indicator
-  char bytes[]{ /*message size*/0x31, 0x00,
-    /*origin indicator, tagged, addressable, 4 bits of protocol*/0x00,
-    /*rest of protocol*/0x34,
-    /*source*/0x00, 0x12, 0x34, 0x00, 0x00, 0x00,
-    /*target*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    /*reserved*/0x00, 0x00, 0x00, 0x00,
-    /*ack, res*/0x03,
-    /*sequence number*/0x00,
-    /*reserved*/0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    /*message type*/0x66, 0x00,
-    /*reserved*/0x00, 0x00,
+
+  shared_ptr<HeaderContent> header = std::make_shared<HeaderContent>();
+  header->set_use_target(true);
+  header->set_source(0x1);
+  header->set_res_required(true);
+  header->set_message_type(lifx::kSetColor);
+
+  uint8_t payload_data[] {
     /*Reserve (Payload start)*/0x00,
     /*HSB*/0x55, 0x55, 0xFF,
     /*saturation*/0xFF,
     /*brightness*/0x01, 0x00,
     /*kelvin*/0xAC, 0x0D,
-    /*transition*/ 0x00, 0x08, 0x00, 0x00};
+    /*transition*/ 0x00, 0x04, 0x00, 0x00};
+  shared_ptr<std::vector<uint8_t> > payload = std::make_shared<std::vector<uint8_t> >();
+  payload->reserve(sizeof(payload_data));
+  payload->assign(payload_data, payload_data + sizeof(payload_data));
+  Packet packet(header, payload);
+  std::vector<uint8_t> bytes = packet.getBytes();
   char *c0 = buffer.data();
-  char *c1 = bytes;
+  uint8_t *c1 = bytes.data();
   for (int i = 0; i < 49; ++i) {
     *(c0++) = *(c1++);
   }
-  return 49;
+  return bytes.size();
 }
 
 LightEnumerator::LightEnumerator(boost::asio::io_service& service,
