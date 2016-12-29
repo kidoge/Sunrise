@@ -10,6 +10,9 @@ using boost::posix_time::time_duration;
 using boost::asio::ip::address_v4;
 using boost::asio::ip::udp;
 
+using lifx::LightEnumerator;
+using lifx::Light;
+
 size_t CreateGreen(boost::array<char, 128>& buffer) {
   // Origin Indicator
   char bytes[]{ /*message size*/0x31, 0x00,

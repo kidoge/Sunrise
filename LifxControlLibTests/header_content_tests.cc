@@ -9,6 +9,8 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+using lifx::HeaderContent;
+
 namespace LifxControlLibTests {		
 	TEST_CLASS(HeaderContentTests) {
 	public:
@@ -25,12 +27,13 @@ namespace LifxControlLibTests {
 				/*message type*/ 0x0D, 0xF0,
 				/*reserved*/ 0x00, 0x00,
 			};
+
 			HeaderContent header;
       header.set_use_target(true);
       header.set_source(0x432100);
 			header.set_target(0x1234);
 			header.set_res_required(true);
-			header.set_message_type(0xF00D);
+			header.set_message_type(static_cast<lifx::MessageTypes>(0xF00D));
 			
 			std::vector<uint8_t> headerBytes = header.GetBytes();
 			Assert::AreEqual(headerBytes.size(), sizeof(expectedBytes));

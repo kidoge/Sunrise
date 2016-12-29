@@ -1,6 +1,7 @@
 #include "header_content.h"
 
 using lifx::MessageTypes;
+using lifx::HeaderContent;
 
 std::vector<uint8_t> HeaderContent::GetBytes() {
   std::vector<uint8_t> bytes;

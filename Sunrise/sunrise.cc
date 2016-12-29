@@ -14,7 +14,9 @@ using boost::posix_time::seconds;
 using boost::asio::ip::address;
 using boost::asio::ip::address_v4;
 
-// TODO: Namespace
+
+using lifx::Light;
+using lifx::LightEnumerator;
 
 address_v4 kSubnet(0xFFFFFF00);
 address_v4 kLocalhost(0xC0A8007F);

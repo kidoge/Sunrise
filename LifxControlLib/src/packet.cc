@@ -1,6 +1,9 @@
 #include "packet.h"
 #include "header_content.h"
 
+using lifx::Packet;
+using lifx::HeaderContent;
+
 Packet::Packet(std::shared_ptr<HeaderContent>header,
                std::shared_ptr<std::vector<uint8_t> > payload) :
                  header_(header), payload_(payload) {
