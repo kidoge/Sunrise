@@ -1,5 +1,7 @@
 #include "header_content.h"
 
+using lifx::MessageTypes;
+
 std::vector<uint8_t> HeaderContent::GetBytes() {
   std::vector<uint8_t> bytes;
 
@@ -107,10 +109,10 @@ void HeaderContent::set_sequence(uint8_t sequence) {
   sequence_ = sequence;
 }
 
-uint16_t HeaderContent::message_type() const {
+MessageTypes HeaderContent::message_type() const {
   return message_type_;
 }
 
-void HeaderContent::set_message_type(uint16_t message_type) {
+void HeaderContent::set_message_type(MessageTypes message_type) {
   message_type_ = message_type;
 }

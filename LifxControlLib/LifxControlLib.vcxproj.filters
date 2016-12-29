@@ -33,6 +33,9 @@
     <ClInclude Include="LifxControl\packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LifxControl\message_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\header_content.cc">

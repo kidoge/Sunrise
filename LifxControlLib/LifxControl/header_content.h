@@ -3,6 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include "message_types.h"
+
 struct HeaderContent {
 public:
   std::vector<uint8_t> GetBytes();
@@ -31,9 +33,9 @@ public:
 
   void set_sequence(uint8_t sequence);
 
-  uint16_t message_type() const;
+  lifx::MessageTypes message_type() const;
 
-  void set_message_type(uint16_t message_type);
+  void set_message_type(lifx::MessageTypes message_type);
 
 private:
   /* frame */
@@ -47,5 +49,5 @@ private:
   uint8_t sequence_ = 0; // ID for distinguishing responses for same client
 
   /* protocol header */
-  uint16_t message_type_ = 0; // Type of message
+  lifx::MessageTypes message_type_ = lifx::kNullMessage; // Type of message
 };
