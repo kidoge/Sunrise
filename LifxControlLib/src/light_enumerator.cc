@@ -20,7 +20,7 @@ using lifx::Light;
 
 using std::shared_ptr;
 
-size_t CreateGreen(boost::array<char, 128>& buffer) {
+std::vector<uint8_t> CreateGreen() {
   // Origin Indicator
 
   shared_ptr<HeaderContent> header = std::make_shared<HeaderContent>();
@@ -40,13 +40,7 @@ size_t CreateGreen(boost::array<char, 128>& buffer) {
   payload->reserve(sizeof(payload_data));
   payload->assign(payload_data, payload_data + sizeof(payload_data));
   Packet packet(header, payload);
-  std::vector<uint8_t> bytes = packet.getBytes();
-  char *c0 = buffer.data();
-  uint8_t *c1 = bytes.data();
-  for (int i = 0; i < 49; ++i) {
-    *(c0++) = *(c1++);
-  }
-  return bytes.size();
+  return packet.getBytes();
 }
 
 LightEnumerator::LightEnumerator(boost::asio::io_service& service,
@@ -58,14 +52,14 @@ LightEnumerator::LightEnumerator(boost::asio::io_service& service,
     << "subnet: " << subnet_mask_.to_string() << std::endl;
 
   udp::socket socket(service, udp::endpoint(udp::v4(), 56700));
-  boost::array<char, 128> reqMsg;
-  size_t len = CreateGreen(reqMsg);
+
+  std::vector<uint8_t> requestMessage = CreateGreen();
 
   // TODO: Send a packet to every IP
   address_v4 broadcast_addr = address_v4::broadcast(localhost_addr_, subnet_mask_);
   std::shared_ptr<udp::endpoint> receiver_ptr(new udp::endpoint(broadcast_addr, 56700));
 
-  socket.async_send_to(boost::asio::buffer(reqMsg, len),
+  socket.async_send_to(boost::asio::buffer(requestMessage),
                        *receiver_ptr,
                        boost::bind(&LightEnumerator::HandleSend, this,
                                    boost::asio::placeholders::error,
@@ -91,7 +85,7 @@ void LightEnumerator::HandleSend(const boost::system::error_code& ec,
 
 void LightEnumerator::HandleReceive(udp::socket& socket,
                                     std::shared_ptr<udp::endpoint> sender_ptr,
-                                    std::shared_ptr<std::array<unsigned char, 128> > buffer,
+                                    std::shared_ptr<std::array<uint8_t, 128> > buffer,
                                     const boost::system::error_code& ec,
                                     std::size_t bytes_transferred) {
   std::cout << sender_ptr->address() << std::endl;
@@ -111,7 +105,7 @@ void LightEnumerator::HandleReceive(udp::socket& socket,
 }
 
 void LightEnumerator::StartReceive(udp::socket& socket) {
-  auto data = std::make_shared<std::array<unsigned char, 128> >();
+  auto data = std::make_shared<std::array<uint8_t, 128> >();
   auto sender_ptr = std::make_shared<udp::endpoint>();
   socket.async_receive_from(boost::asio::buffer(*data),
                             *sender_ptr,
