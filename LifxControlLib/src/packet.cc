@@ -14,7 +14,8 @@ std::vector<uint8_t> Packet::getBytes() {
   std::vector<uint8_t> bytes;
 
   // Calculate packet size, including 2 bytes for packet size.
-  uint16_t packet_size = headerBytes.size() + payload_->size() + 2;
+  uint16_t packet_size =
+    static_cast<uint16_t>(headerBytes.size() + payload_->size() + 2);
   bytes.reserve(packet_size);
 
   // Insert packet size t othe front of the header, in little endian.

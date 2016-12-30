@@ -136,12 +136,12 @@ namespace LifxControlLibTests {
         /*ack, res*/ 0x00,
         /*sequence number*/ 0x00,
         /*reserved*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        /*message type*/ 0x34, 0x12,
+        /*message type*/ 0x57, 0x13,
         /*reserved*/ 0x00, 0x00,
       };
 
       HeaderContent header;
-      header.set_message_type(static_cast<lifx::MessageTypes>(0x1234));
+      header.set_message_type(static_cast<lifx::MessageTypes>(0x1357));
 
       compareResult(header.GetBytes(), expectedBytes);
     }
@@ -149,22 +149,23 @@ namespace LifxControlLibTests {
 		TEST_METHOD(TestFullHeader) {
 			std::vector<uint8_t> expectedBytes {
 				/*origin indicator, tagged, addressable, protocol*/ 0x00, 0x34,
-				/*source*/ 0x00, 0x21, 0x43, 0x00,
-				/*target*/ 0x34, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        /*source*/ 0x21, 0x43, 0x65, 0x87,
+        /*target*/ 0xBC, 0x9A, 0x78, 0x56, 0x34, 0x12, 0x00, 0x00,
 				/*reserved*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/*ack, res*/ 0x01,
+        /*ack, res*/ 0x03,
 				/*sequence number*/ 0x00,
 				/*reserved*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-				/*message type*/ 0x0D, 0xF0,
+        /*message type*/ 0x57, 0x13,
 				/*reserved*/ 0x00, 0x00,
 			};
 
 			HeaderContent header;
       header.set_use_target(true);
-      header.set_source(0x432100);
-			header.set_target(0x1234);
+      header.set_source(0x87654321);
+      header.set_target(0x123456789ABC);
+      header.set_ack_required(true);
 			header.set_res_required(true);
-			header.set_message_type(static_cast<lifx::MessageTypes>(0xF00D));
+			header.set_message_type(static_cast<lifx::MessageTypes>(0x1357));
 			
       compareResult(header.GetBytes(), expectedBytes);
 		}
