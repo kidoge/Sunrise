@@ -6,8 +6,12 @@
 #include "message_types.h"
 
 namespace lifx {
-  struct HeaderContent {
+  class HeaderContent {
   public:
+    HeaderContent() = default;
+
+    HeaderContent(std::vector<uint8_t> bytes);
+
     std::vector<uint8_t> GetBytes();
 
     bool use_target() const;

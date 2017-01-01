@@ -1,4 +1,5 @@
 #include <boost/asio.hpp>
+#include <exception>
 #include <memory>
 
 #include "CppUnitTest.h"
@@ -11,25 +12,25 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using lifx::HeaderContent;
 
+const std::vector<uint8_t> kDefaultPacket {
+  /*origin indicator, tagged, addressable, protocol*/ 0x00, 0x14,
+  /*source*/ 0x00, 0x00, 0x00, 0x00,
+  /*target*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /*reserved*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /*ack, res*/ 0x00,
+  /*sequence number*/ 0x00,
+  /*reserved*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  /*message type*/ 0x00, 0x00,
+  /*reserved*/ 0x00, 0x00,
+};
+
 namespace LifxControlLibTests {		
 	TEST_CLASS(HeaderContentTests) {
 	public:
     TEST_METHOD(TestDefaultHeader) {
-      std::vector<uint8_t> expectedBytes {
-        /*origin indicator, tagged, addressable, protocol*/ 0x00, 0x14,
-        /*source*/ 0x00, 0x00, 0x00, 0x00,
-        /*target*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        /*reserved*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        /*ack, res*/ 0x00,
-        /*sequence number*/ 0x00,
-        /*reserved*/ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        /*message type*/ 0x00, 0x00,
-        /*reserved*/ 0x00, 0x00,
-      };
-
       HeaderContent header;
 
-      compareResult(header.GetBytes(), expectedBytes);
+      compareResult(header.GetBytes(), kDefaultPacket);
     }
 
     TEST_METHOD(TestUseTargetField) {
@@ -170,11 +171,56 @@ namespace LifxControlLibTests {
       compareResult(header.GetBytes(), expectedBytes);
 		}
 
-    void compareResult(std::vector<uint8_t> &output, std::vector<uint8_t> &expected) {
+    void compareResult(const std::vector<uint8_t> &output, 
+                       const std::vector<uint8_t> &expected) {
       Assert::AreEqual(output.size(), expected.size());
       for (int idx = 0; idx < output.size(); ++idx) {
         Assert::AreEqual(output[idx], expected[idx]);
       }
     }
-	};
+
+    TEST_METHOD(TestConstructorWithIncorrectProtocol) {
+      std::vector<uint8_t> bytes = kDefaultPacket;
+      bytes[0] = 0xFF;
+
+      Assert::ExpectException<std::invalid_argument>([bytes] {
+        HeaderContent testHeader(bytes);
+      });
+
+      bytes[0] = 0;
+      bytes[1] |= 0b00001111;
+
+      Assert::ExpectException<std::invalid_argument>([bytes] {
+        HeaderContent testHeader(bytes);
+      });
+    }
+
+    TEST_METHOD(TestConstructorWithIncorrectReserved) {
+      std::vector<uint8_t> bytes = kDefaultPacket;
+      std::vector<bool> shouldBeZero {
+        /*origin indicator, tagged, addressable, protocol*/ true, true,
+        /*source*/ false, false, false, false,
+        /*target*/ false, false, false, false, false, false, false, false,
+        /*reserved*/ true, true, true, true, true, true,
+        /*ack, res*/ false,
+        /*sequence number*/ false,
+        /*reserved*/ true, true, true, true, true, true, true, true,
+        /*message type*/ false, false,
+        /*reserved*/ true, true
+      };
+
+      for (int idx = 0; idx < bytes.size(); ++idx) {
+        bytes[idx] = 0xFF;
+        if (shouldBeZero[idx]) {
+          Assert::ExpectException<std::invalid_argument>([bytes] {
+            HeaderContent testHeader(bytes);
+          });
+        } else {
+          // If this throws an exception, test will fail.
+          HeaderContent testHeader(bytes);
+        }
+        bytes[idx] = kDefaultPacket[idx];
+      }
+    }
+  };
 }
