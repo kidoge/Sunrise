@@ -171,14 +171,6 @@ namespace LifxControlLibTests {
       compareResult(header.GetBytes(), expectedBytes);
 		}
 
-    void compareResult(const std::vector<uint8_t> &output, 
-                       const std::vector<uint8_t> &expected) {
-      Assert::AreEqual(output.size(), expected.size());
-      for (int idx = 0; idx < output.size(); ++idx) {
-        Assert::AreEqual(output[idx], expected[idx]);
-      }
-    }
-
     TEST_METHOD(TestConstructorWithIncorrectProtocol) {
       std::vector<uint8_t> bytes = kDefaultPacket;
       bytes[0] = 0xFF;
@@ -220,6 +212,92 @@ namespace LifxControlLibTests {
           HeaderContent testHeader(bytes);
         }
         bytes[idx] = kDefaultPacket[idx];
+      }
+    }
+
+    TEST_METHOD(TestConstructorReconstruction) {
+      HeaderContent header;
+      header.set_use_target(true);
+      header.set_source(0x87654321);
+      header.set_target(0x135792468ACE);
+      header.set_ack_required(true);
+      header.set_res_required(true);
+      header.set_message_type(static_cast<lifx::MessageTypes>(0x1357));
+
+      HeaderContent reconstructed(header.GetBytes());
+      Assert::IsTrue(header == reconstructed);
+    }
+
+    TEST_METHOD(TestEqualityChecksUseTarget) {
+      HeaderContent header1;
+      header1.set_use_target(false);
+      HeaderContent header2;
+      header2.set_use_target(false);
+      Assert::IsTrue(header1 == header2);
+      Assert::IsFalse(header1 != header2);
+
+      header2.set_use_target(true);
+      Assert::IsTrue(header1 != header2);
+      Assert::IsFalse(header1 == header2);
+    }
+
+    TEST_METHOD(TestEqualityChecksSource) {
+      HeaderContent header1;
+      header1.set_source(0x12345678);
+      HeaderContent header2;
+      header2.set_source(0x12345678);
+      Assert::IsTrue(header1 == header2);
+      Assert::IsFalse(header1 != header2);
+
+      header2.set_source(0x12345679);
+      Assert::IsTrue(header1 != header2);
+      Assert::IsFalse(header1 == header2);
+    }
+
+    TEST_METHOD(TestEqualityChecksTarget) {
+      HeaderContent header1;
+      header1.set_target(0x1234567890AB);
+      HeaderContent header2;
+      header2.set_target(0x1234567890AB);
+      Assert::IsTrue(header1 == header2);
+      Assert::IsFalse(header1 != header2);
+
+      header2.set_target(0x1234567890AC);
+      Assert::IsTrue(header1 != header2);
+      Assert::IsFalse(header1 == header2);
+    }
+
+    TEST_METHOD(TestEqualityChecksAck) {
+      HeaderContent header1;
+      header1.set_ack_required(false);
+      HeaderContent header2;
+      header2.set_ack_required(false);
+      Assert::IsTrue(header1 == header2);
+      Assert::IsFalse(header1 != header2);
+
+      header2.set_ack_required(true);
+      Assert::IsTrue(header1 != header2);
+      Assert::IsFalse(header1 == header2);
+    }
+
+    TEST_METHOD(TestEqualityChecksRes) {
+      HeaderContent header1;
+      header1.set_res_required(false);
+      HeaderContent header2;
+      header2.set_res_required(false);
+      Assert::IsTrue(header1 == header2);
+      Assert::IsFalse(header1 != header2);
+
+      header2.set_res_required(true);
+      Assert::IsTrue(header1 != header2);
+      Assert::IsFalse(header1 == header2);
+    }
+
+    void compareResult(const std::vector<uint8_t> &output,
+                       const std::vector<uint8_t> &expected) {
+      Assert::AreEqual(output.size(), expected.size());
+      for (int idx = 0; idx < output.size(); ++idx) {
+        Assert::AreEqual(output[idx], expected[idx]);
       }
     }
   };

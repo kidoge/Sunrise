@@ -12,7 +12,7 @@ namespace lifx {
 
     HeaderContent(std::vector<uint8_t> bytes);
 
-    std::vector<uint8_t> GetBytes();
+    std::vector<uint8_t> GetBytes() const;
 
     bool use_target() const;
 
@@ -41,6 +41,9 @@ namespace lifx {
     lifx::MessageTypes message_type() const;
 
     void set_message_type(lifx::MessageTypes message_type);
+
+    bool operator== (const HeaderContent& rhs) const;
+    bool operator!= (const HeaderContent& rhs) const;
 
   private:
     /* frame */

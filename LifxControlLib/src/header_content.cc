@@ -28,9 +28,11 @@ HeaderContent::HeaderContent(std::vector<uint8_t> bytes) {
   use_target_ = static_cast<bool>((bytes[1] & (~0b00010100)) != 0);
   
   // Byte 2 - 5 = source
-  source_ = static_cast<int32_t>(readLittleEndian(bytes.begin() + 2, bytes.begin() + 6));
+  source_ = static_cast<int32_t>(readLittleEndian(bytes.begin() + 2, 
+                                                  bytes.begin() + 6));
   
   // Byte 6 - 13 = target
+  target_ = readLittleEndian(bytes.begin() + 6, bytes.begin() + 14);
 
   // Byte 14 - 19 = reserved
   for (int idx = 14; idx <= 19; ++idx) {
@@ -38,9 +40,18 @@ HeaderContent::HeaderContent(std::vector<uint8_t> bytes) {
       throw std::invalid_argument("bytes has invalid format.");
     }
   }
+
+  uint8_t byte20 = bytes[20];
+
   // Byte 20, bit 7 = ack_required
+  ack_required_ = (byte20 & 0b00000010) != 0;
+
   // Byte 20, bit 8 = res_required
+  res_required_ = (byte20 & 0b00000001) != 0;
+
   // Byte 21 = sequence
+  sequence_ = static_cast<uint8_t>(bytes[21]);
+
   // Byte 22 - 29 = reserved
   for (int idx = 22; idx <= 29; ++idx) {
     if (bytes[idx] != 0) {
@@ -48,6 +59,9 @@ HeaderContent::HeaderContent(std::vector<uint8_t> bytes) {
     }
   }
   // Byte 30 - 31 = type
+  message_type_ = static_cast<MessageTypes>(
+    readLittleEndian(bytes.begin() + 30, bytes.begin() + 32));
+
   // Byte 32 - 33 = reserved
   for (int idx = 32; idx <= 33; ++idx) {
     if (bytes[idx] != 0) {
@@ -56,7 +70,7 @@ HeaderContent::HeaderContent(std::vector<uint8_t> bytes) {
   }
 }
 
-std::vector<uint8_t> HeaderContent::GetBytes() {
+std::vector<uint8_t> HeaderContent::GetBytes() const {
   std::vector<uint8_t> bytes;
 
   // Last 8 bytes of protocol
@@ -113,6 +127,20 @@ std::vector<uint8_t> HeaderContent::GetBytes() {
   }
 
   return bytes;
+}
+
+bool HeaderContent::operator==(const HeaderContent& rhs) const {
+  return (use_target_ == rhs.use_target() &&
+          source_ == rhs.source() &&
+          target_ == rhs.target() &&
+          ack_required_ == rhs.ack_required() &&
+          res_required_ == rhs.res_required() &&
+          sequence_ == rhs.sequence() &&
+          message_type_ == rhs.message_type());
+}
+
+bool HeaderContent::operator!=(const HeaderContent& rhs) const {
+  return !operator==(rhs);
 }
 
 bool HeaderContent::use_target() const {
