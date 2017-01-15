@@ -13,13 +13,16 @@ namespace lifx {
   class LifxControl {
 
   public:
-    LifxControl(boost::asio::io_service& service,
-                    const boost::asio::ip::address_v4& localhost_addr,
-                    const boost::asio::ip::address_v4& subnet_mask);
+    LifxControl(const boost::asio::ip::address_v4& localhost_addr,
+                const boost::asio::ip::address_v4& subnet_mask);
 
+    ~LifxControl();
+    
     std::vector<Light> GetLights(const boost::posix_time::time_duration& timeout) const;
 
   private:
+    std::shared_ptr<boost::asio::io_service> io_service_;
+    std::shared_ptr<boost::asio::ip::udp::socket> socket_;
     std::vector<Light> lights_;
     std::mutex lock_;
     boost::asio::ip::address_v4 localhost_addr_;
@@ -28,14 +31,13 @@ namespace lifx {
     void HandleSend(const boost::system::error_code& ec,
                     std::size_t bytes_transferred);
 
-    void HandleReceive(boost::asio::ip::udp::socket& socket,
-                       std::shared_ptr<boost::asio::ip::udp::endpoint> sender_ptr,
+    void HandleReceive(std::shared_ptr<boost::asio::ip::udp::endpoint> sender_ptr,
                        std::shared_ptr<std::array<unsigned char, 128> > buffer,
                        const boost::system::error_code& ec,
                        std::size_t bytes_transferred);
 
-    void StartReceive(boost::asio::ip::udp::socket& socket);
+    void StartReceive();
 
-    void StopListening(boost::asio::io_service& service);
+    void StopListening();
   };
 }

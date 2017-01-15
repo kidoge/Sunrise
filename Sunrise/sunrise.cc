@@ -19,11 +19,10 @@ using lifx::Light;
 using lifx::LifxControl;
 
 address_v4 kSubnet(0xFFFFFF00);
-address_v4 kLocalhost(0xC0A8007F);
+address_v4 kLocalhost(0xC0A80102);
 
 int main() {
-	boost::asio::io_service service;
-	LifxControl lifx_control(service, kLocalhost, kSubnet);
+	LifxControl lifx_control(kLocalhost, kSubnet);
 	vector<Light> lights = lifx_control.GetLights(seconds(5));
 	
 	std::cout << "Total lights: " << lights.size() << std::endl;

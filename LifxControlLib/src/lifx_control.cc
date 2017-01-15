@@ -43,15 +43,13 @@ std::vector<uint8_t> CreateGreen() {
   return packet.getBytes();
 }
 
-LifxControl::LifxControl(boost::asio::io_service& service,
-                                 const address_v4& localhost_addr,
-                                 const address_v4& subnet_mask) :
-                                   localhost_addr_(localhost_addr),
-                                   subnet_mask_(subnet_mask) {
-  std::cout << "localhost: " << localhost_addr_.to_string() << std::endl
-    << "subnet: " << subnet_mask_.to_string() << std::endl;
-
-  udp::socket socket(service, udp::endpoint(udp::v4(), 56700));
+LifxControl::LifxControl(const address_v4& localhost_addr,
+                         const address_v4& subnet_mask) :
+                            localhost_addr_(localhost_addr),
+                            subnet_mask_(subnet_mask) {
+  io_service_ = std::make_shared<boost::asio::io_service>();
+  socket_ = shared_ptr<udp::socket>(
+    new udp::socket(*io_service_, udp::endpoint(udp::v4(), 56700)));
 
   std::vector<uint8_t> requestMessage = CreateGreen();
 
@@ -59,19 +57,23 @@ LifxControl::LifxControl(boost::asio::io_service& service,
   address_v4 broadcast_addr = address_v4::broadcast(localhost_addr_, subnet_mask_);
   std::shared_ptr<udp::endpoint> receiver_ptr(new udp::endpoint(broadcast_addr, 56700));
 
-  socket.async_send_to(boost::asio::buffer(requestMessage),
+  socket_->async_send_to(boost::asio::buffer(requestMessage),
                        *receiver_ptr,
                        boost::bind(&LifxControl::HandleSend, this,
                                    boost::asio::placeholders::error,
                                    boost::asio::placeholders::bytes_transferred));
 
-  service.run();
-  service.reset();
+  io_service_->run();
+  io_service_->reset();
 
-  boost::asio::deadline_timer t(service, boost::posix_time::seconds(5));
-  t.async_wait(boost::bind(&LifxControl::StopListening, this, boost::ref(service)));
-  StartReceive(socket);
-  service.run();
+  boost::asio::deadline_timer t(*io_service_, boost::posix_time::seconds(5));
+  t.async_wait(boost::bind(&LifxControl::StopListening, this));
+  StartReceive();
+  io_service_->run();
+}
+
+LifxControl::~LifxControl() {
+  io_service_->stop();
 }
 
 std::vector<Light> LifxControl::GetLights(const time_duration& timeout) const {
@@ -83,11 +85,10 @@ void LifxControl::HandleSend(const boost::system::error_code& ec,
   // Do nothing...
 }
 
-void LifxControl::HandleReceive(udp::socket& socket,
-                                    std::shared_ptr<udp::endpoint> sender_ptr,
-                                    std::shared_ptr<std::array<uint8_t, 128> > buffer,
-                                    const boost::system::error_code& ec,
-                                    std::size_t bytes_transferred) {
+void LifxControl::HandleReceive(std::shared_ptr<udp::endpoint> sender_ptr,
+                                std::shared_ptr<std::array<uint8_t, 128> > buffer,
+                                const boost::system::error_code& ec,
+                                std::size_t bytes_transferred) {
   std::cout << sender_ptr->address() << std::endl;
   if (sender_ptr->address().to_v4() != localhost_addr_) {
     std::cout << sender_ptr->address().to_string() << " responded." << std::endl;
@@ -101,22 +102,21 @@ void LifxControl::HandleReceive(udp::socket& socket,
   } else {
     std::cout << "broadcast to self" << std::endl;
   }
-  StartReceive(socket);
+  StartReceive();
 }
 
-void LifxControl::StartReceive(udp::socket& socket) {
+void LifxControl::StartReceive() {
   auto data = std::make_shared<std::array<uint8_t, 128> >();
   auto sender_ptr = std::make_shared<udp::endpoint>();
-  socket.async_receive_from(boost::asio::buffer(*data),
-                            *sender_ptr,
-                            boost::bind(&LifxControl::HandleReceive, this,
-                                        boost::ref(socket),
-                                        sender_ptr,
-                                        data,
-                                        boost::asio::placeholders::error,
-                                        boost::asio::placeholders::bytes_transferred));
+  socket_->async_receive_from(boost::asio::buffer(*data),
+                             *sender_ptr,
+                             boost::bind(&LifxControl::HandleReceive, this,
+                                         sender_ptr,
+                                         data,
+                                         boost::asio::placeholders::error,
+                                         boost::asio::placeholders::bytes_transferred));
 }
 
-void LifxControl::StopListening(boost::asio::io_service& service) {
-  service.stop();
+void LifxControl::StopListening() {
+  io_service_->stop();
 }
