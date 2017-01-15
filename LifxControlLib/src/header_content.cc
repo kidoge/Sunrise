@@ -1,5 +1,4 @@
 #include <exception>
-
 #include "header_content.h"
 
 using lifx::MessageTypes;
@@ -7,13 +6,20 @@ using lifx::HeaderContent;
 
 uint64_t readLittleEndian(std::vector<uint8_t>::iterator begin_it, 
                           std::vector<uint8_t>::iterator end_it) {
-  std::vector<uint8_t>::iterator it = end_it - 1;
+  auto it = end_it - 1;
   uint64_t result = 0;
   while (it >= begin_it) {
     result = result << 8 | (*it);
     it--;
   }
   return result;
+}
+
+void WriteLittleEndian(std::vector<uint8_t>& bytes, uint64_t number, size_t size) {
+  for (size_t byte_idx = 0; byte_idx < size; ++byte_idx) {
+    bytes.push_back(number & 0xFF);
+    number = number >> 8;
+  }
 }
 
 HeaderContent::HeaderContent(std::vector<uint8_t> bytes) {
@@ -86,20 +92,10 @@ std::vector<uint8_t> HeaderContent::GetBytes() const {
   bytes.push_back(byte0);
 
   // Source
-  bytes.push_back(static_cast<uint8_t>(source_ & 0x000000FF));
-  bytes.push_back(static_cast<uint8_t>((source_ & 0x0000FF00) >> 8));
-  bytes.push_back(static_cast<uint8_t>((source_ & 0x00FF0000) >> 16));
-  bytes.push_back(static_cast<uint8_t>((source_ & 0xFF000000) >> 24));
+  WriteLittleEndian(bytes, source_, 4);
 
   // Target
-  bytes.push_back(static_cast<uint8_t>(target_ & 0x00000000000000FF));
-  bytes.push_back(static_cast<uint8_t>((target_ & 0x000000000000FF00) >> 8));
-  bytes.push_back(static_cast<uint8_t>((target_ & 0x0000000000FF0000) >> 16));
-  bytes.push_back(static_cast<uint8_t>((target_ & 0x00000000FF000000) >> 24));
-  bytes.push_back(static_cast<uint8_t>((target_ & 0x000000FF00000000) >> 32));
-  bytes.push_back(static_cast<uint8_t>((target_ & 0x0000FF0000000000) >> 40));
-  bytes.push_back(static_cast<uint8_t>((target_ & 0x00FF000000000000) >> 48));
-  bytes.push_back(static_cast<uint8_t>((target_ & 0xFF00000000000000) >> 56));
+  WriteLittleEndian(bytes, target_, 8);
 
   // Reserved 6 bytes
   for (int idx = 0; idx < 6; ++idx) {
@@ -118,8 +114,7 @@ std::vector<uint8_t> HeaderContent::GetBytes() const {
     bytes.push_back(0);
   }
 
-  bytes.push_back(message_type_ & 0x00FF);
-  bytes.push_back((message_type_ & 0xFF00) >> 8);
+  WriteLittleEndian(bytes, message_type_, 2);
 
   // Reserved 2 bytes
   for (int idx = 0; idx < 2; ++idx) {
