@@ -10,10 +10,10 @@ namespace lifx {
   class Light;
   class io_service;
 
-  class LightEnumerator {
+  class LifxControl {
 
   public:
-    LightEnumerator(boost::asio::io_service& service,
+    LifxControl(boost::asio::io_service& service,
                     const boost::asio::ip::address_v4& localhost_addr,
                     const boost::asio::ip::address_v4& subnet_mask);
 

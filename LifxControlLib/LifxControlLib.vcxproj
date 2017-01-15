@@ -136,7 +136,7 @@
   <ItemGroup>
     <ClInclude Include="LifxControl\header_content.h" />
     <ClInclude Include="LifxControl\light.h" />
-    <ClInclude Include="LifxControl\light_enumerator.h" />
+    <ClInclude Include="LifxControl\lifx_control.h" />
     <ClInclude Include="LifxControl\message_types.h" />
     <ClInclude Include="LifxControl\packet.h" />
     <ClInclude Include="targetver.h" />
@@ -144,7 +144,7 @@
   <ItemGroup>
     <ClCompile Include="src\header_content.cc" />
     <ClCompile Include="src\light.cc" />
-    <ClCompile Include="src\light_enumerator.cc" />
+    <ClCompile Include="src\lifx_control.cc" />
     <ClCompile Include="src\packet.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

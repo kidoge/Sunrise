@@ -27,13 +27,13 @@
     <ClInclude Include="LifxControl\light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LifxControl\light_enumerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LifxControl\packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LifxControl\message_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LifxControl\lifx_control.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,10 +44,10 @@
     <ClCompile Include="src\light.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\light_enumerator.cc">
+    <ClCompile Include="src\packet.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\packet.cc">
+    <ClCompile Include="src\lifx_control.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

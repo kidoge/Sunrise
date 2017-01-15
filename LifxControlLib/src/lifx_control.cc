@@ -4,7 +4,7 @@
 #include <boost/array.hpp>
 
 #include "light.h"
-#include "light_enumerator.h"
+#include "lifx_control.h"
 #include "packet.h"
 #include "header_content.h"
 #include "message_types.h"
@@ -13,7 +13,7 @@ using boost::posix_time::time_duration;
 using boost::asio::ip::address_v4;
 using boost::asio::ip::udp;
 
-using lifx::LightEnumerator;
+using lifx::LifxControl;
 using lifx::Packet;
 using lifx::HeaderContent;
 using lifx::Light;
@@ -43,7 +43,7 @@ std::vector<uint8_t> CreateGreen() {
   return packet.getBytes();
 }
 
-LightEnumerator::LightEnumerator(boost::asio::io_service& service,
+LifxControl::LifxControl(boost::asio::io_service& service,
                                  const address_v4& localhost_addr,
                                  const address_v4& subnet_mask) :
                                    localhost_addr_(localhost_addr),
@@ -61,7 +61,7 @@ LightEnumerator::LightEnumerator(boost::asio::io_service& service,
 
   socket.async_send_to(boost::asio::buffer(requestMessage),
                        *receiver_ptr,
-                       boost::bind(&LightEnumerator::HandleSend, this,
+                       boost::bind(&LifxControl::HandleSend, this,
                                    boost::asio::placeholders::error,
                                    boost::asio::placeholders::bytes_transferred));
 
@@ -69,21 +69,21 @@ LightEnumerator::LightEnumerator(boost::asio::io_service& service,
   service.reset();
 
   boost::asio::deadline_timer t(service, boost::posix_time::seconds(5));
-  t.async_wait(boost::bind(&LightEnumerator::StopListening, this, boost::ref(service)));
+  t.async_wait(boost::bind(&LifxControl::StopListening, this, boost::ref(service)));
   StartReceive(socket);
   service.run();
 }
 
-std::vector<Light> LightEnumerator::GetLights(const time_duration& timeout) const {
+std::vector<Light> LifxControl::GetLights(const time_duration& timeout) const {
   return std::vector<Light>();
 }
 
-void LightEnumerator::HandleSend(const boost::system::error_code& ec,
+void LifxControl::HandleSend(const boost::system::error_code& ec,
                                  std::size_t bytes_transferred) {
   // Do nothing...
 }
 
-void LightEnumerator::HandleReceive(udp::socket& socket,
+void LifxControl::HandleReceive(udp::socket& socket,
                                     std::shared_ptr<udp::endpoint> sender_ptr,
                                     std::shared_ptr<std::array<uint8_t, 128> > buffer,
                                     const boost::system::error_code& ec,
@@ -104,12 +104,12 @@ void LightEnumerator::HandleReceive(udp::socket& socket,
   StartReceive(socket);
 }
 
-void LightEnumerator::StartReceive(udp::socket& socket) {
+void LifxControl::StartReceive(udp::socket& socket) {
   auto data = std::make_shared<std::array<uint8_t, 128> >();
   auto sender_ptr = std::make_shared<udp::endpoint>();
   socket.async_receive_from(boost::asio::buffer(*data),
                             *sender_ptr,
-                            boost::bind(&LightEnumerator::HandleReceive, this,
+                            boost::bind(&LifxControl::HandleReceive, this,
                                         boost::ref(socket),
                                         sender_ptr,
                                         data,
@@ -117,6 +117,6 @@ void LightEnumerator::StartReceive(udp::socket& socket) {
                                         boost::asio::placeholders::bytes_transferred));
 }
 
-void LightEnumerator::StopListening(boost::asio::io_service& service) {
+void LifxControl::StopListening(boost::asio::io_service& service) {
   service.stop();
 }
