@@ -18,7 +18,9 @@ namespace lifx {
 
     ~LifxControl();
     
-    std::vector<Light> GetLights(const boost::posix_time::time_duration& timeout) const;
+    std::vector<Light> Enumerate(const boost::posix_time::time_duration& timeout);
+
+    Light CreateLight(boost::asio::ip::address_v4& light_addr);
 
   private:
     std::shared_ptr<boost::asio::io_service> io_service_;

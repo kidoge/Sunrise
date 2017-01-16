@@ -23,7 +23,7 @@ address_v4 kLocalhost(0xC0A80102);
 
 int main() {
 	LifxControl lifx_control(kLocalhost, kSubnet);
-	vector<Light> lights = lifx_control.GetLights(seconds(5));
+	vector<Light> lights = lifx_control.Enumerate(seconds(5));
 	
 	std::cout << "Total lights: " << lights.size() << std::endl;
 

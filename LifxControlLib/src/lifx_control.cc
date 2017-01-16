@@ -50,6 +50,13 @@ LifxControl::LifxControl(const address_v4& localhost_addr,
   io_service_ = std::make_shared<boost::asio::io_service>();
   socket_ = shared_ptr<udp::socket>(
     new udp::socket(*io_service_, udp::endpoint(udp::v4(), 56700)));
+}
+
+LifxControl::~LifxControl() {
+  io_service_->stop();
+}
+
+std::vector<Light> LifxControl::Enumerate(const time_duration& timeout) {
 
   std::vector<uint8_t> requestMessage = CreateGreen();
 
@@ -58,26 +65,24 @@ LifxControl::LifxControl(const address_v4& localhost_addr,
   std::shared_ptr<udp::endpoint> receiver_ptr(new udp::endpoint(broadcast_addr, 56700));
 
   socket_->async_send_to(boost::asio::buffer(requestMessage),
-                       *receiver_ptr,
-                       boost::bind(&LifxControl::HandleSend, this,
-                                   boost::asio::placeholders::error,
-                                   boost::asio::placeholders::bytes_transferred));
+    *receiver_ptr,
+    boost::bind(&LifxControl::HandleSend, this,
+      boost::asio::placeholders::error,
+      boost::asio::placeholders::bytes_transferred));
 
   io_service_->run();
   io_service_->reset();
 
-  boost::asio::deadline_timer t(*io_service_, boost::posix_time::seconds(5));
+  boost::asio::deadline_timer t(*io_service_, timeout);
   t.async_wait(boost::bind(&LifxControl::StopListening, this));
   StartReceive();
   io_service_->run();
+
+  return std::vector<Light>(lights_);
 }
 
-LifxControl::~LifxControl() {
-  io_service_->stop();
-}
-
-std::vector<Light> LifxControl::GetLights(const time_duration& timeout) const {
-  return std::vector<Light>();
+Light LifxControl::CreateLight(boost::asio::ip::address_v4& light_addr) {
+  return Light(io_service_, socket_, light_addr);
 }
 
 void LifxControl::HandleSend(const boost::system::error_code& ec,
@@ -97,7 +102,7 @@ void LifxControl::HandleReceive(std::shared_ptr<udp::endpoint> sender_ptr,
     }
     std::cout << "(len: " << bytes_transferred << ")" << std::endl;
     lock_.lock();
-    lights_.push_back(Light(sender_ptr->address().to_v4()));
+    lights_.push_back(Light(io_service_, socket_, sender_ptr->address().to_v4()));
     lock_.unlock();
   } else {
     std::cout << "broadcast to self" << std::endl;
