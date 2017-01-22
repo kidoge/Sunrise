@@ -60,7 +60,6 @@ std::vector<Light> LifxControl::Enumerate(const time_duration& timeout) {
 
   std::vector<uint8_t> requestMessage = CreateGreen();
 
-  // TODO: Send a packet to every IP
   address_v4 broadcast_addr = address_v4::broadcast(localhost_addr_, subnet_mask_);
   std::shared_ptr<udp::endpoint> receiver_ptr(new udp::endpoint(broadcast_addr, 56700));
 
@@ -77,7 +76,6 @@ std::vector<Light> LifxControl::Enumerate(const time_duration& timeout) {
   t.async_wait(boost::bind(&LifxControl::StopListening, this));
   StartReceive();
   io_service_->run();
-
   return std::vector<Light>(lights_);
 }
 
