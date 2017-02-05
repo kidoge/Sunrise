@@ -92,18 +92,15 @@ void LifxControl::HandleReceive(std::shared_ptr<udp::endpoint> sender_ptr,
                                 std::shared_ptr<std::array<uint8_t, 128> > buffer,
                                 const boost::system::error_code& ec,
                                 std::size_t bytes_transferred) {
-  std::cout << sender_ptr->address() << std::endl;
+  // Broadcasting will send the packet to the sender as well. We should ignore it.
   if (sender_ptr->address().to_v4() != localhost_addr_) {
     std::cout << sender_ptr->address().to_string() << " responded." << std::endl;
     for (std::size_t idx = 0; idx < bytes_transferred; ++idx) {
       std::cout << std::to_string((*buffer)[idx]) << " ";
     }
-    std::cout << "(len: " << bytes_transferred << ")" << std::endl;
     lock_.lock();
     lights_.push_back(Light(io_service_, socket_, sender_ptr->address().to_v4()));
     lock_.unlock();
-  } else {
-    std::cout << "broadcast to self" << std::endl;
   }
   StartReceive();
 }

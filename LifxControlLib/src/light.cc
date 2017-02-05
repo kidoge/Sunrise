@@ -11,3 +11,11 @@ Light::Light(std::shared_ptr<boost::asio::io_service> service,
 boost::asio::ip::address_v4 Light::address() const {
   return addr_;
 }
+
+bool Light::operator== (const Light& rhs) const {
+  return addr_ == rhs.address();
+}
+
+bool Light::operator!= (const Light& rhs) const {
+  return !operator==(rhs);
+}

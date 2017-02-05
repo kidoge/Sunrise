@@ -12,6 +12,10 @@ namespace lifx {
           const boost::asio::ip::address_v4& addr);
 
     boost::asio::ip::address_v4 address() const;
+
+    bool operator== (const Light& rhs) const;
+    bool operator!= (const Light& rhs) const;
+
   private:
     std::shared_ptr<boost::asio::io_service> service_;
     std::shared_ptr<boost::asio::ip::udp::socket> socket_;
