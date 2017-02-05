@@ -20,26 +20,13 @@ using lifx::Light;
 
 using std::shared_ptr;
 
-std::vector<uint8_t> CreateGreen() {
-  // Origin Indicator
-
+std::vector<uint8_t> CreatePacket() {
   shared_ptr<HeaderContent> header = std::make_shared<HeaderContent>();
   header->set_use_target(true);
   header->set_source(0x1);
   header->set_res_required(true);
-  header->set_message_type(lifx::kSetColor);
-
-  uint8_t payload_data[] {
-    /*Reserve (Payload start)*/0x00,
-    /*HSB*/0x55, 0x55, 0xFF,
-    /*saturation*/0xFF,
-    /*brightness*/0x01, 0x00,
-    /*kelvin*/0xAC, 0x0D,
-    /*transition*/ 0x00, 0x04, 0x00, 0x00};
-  shared_ptr<std::vector<uint8_t> > payload = std::make_shared<std::vector<uint8_t> >();
-  payload->reserve(sizeof(payload_data));
-  payload->assign(payload_data, payload_data + sizeof(payload_data));
-  Packet packet(header, payload);
+  header->set_message_type(lifx::kGetVersion);
+  Packet packet(header, nullptr);
   return packet.getBytes();
 }
 
@@ -58,7 +45,7 @@ LifxControl::~LifxControl() {
 
 std::vector<Light> LifxControl::Enumerate(const time_duration& timeout) {
 
-  std::vector<uint8_t> requestMessage = CreateGreen();
+  std::vector<uint8_t> requestMessage = CreatePacket();
 
   address_v4 broadcast_addr = address_v4::broadcast(localhost_addr_, subnet_mask_);
   std::shared_ptr<udp::endpoint> receiver_ptr(new udp::endpoint(broadcast_addr, 56700));
