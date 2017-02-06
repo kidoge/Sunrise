@@ -187,34 +187,6 @@ namespace LifxControlLibTests {
       });
     }
 
-    TEST_METHOD(TestConstructorWithIncorrectReserved) {
-      std::vector<uint8_t> bytes = kDefaultPacket;
-      std::vector<bool> shouldBeZero {
-        /*origin indicator, tagged, addressable, protocol*/ true, true,
-        /*source*/ false, false, false, false,
-        /*target*/ false, false, false, false, false, false, false, false,
-        /*reserved*/ true, true, true, true, true, true,
-        /*ack, res*/ false,
-        /*sequence number*/ false,
-        /*reserved*/ true, true, true, true, true, true, true, true,
-        /*message type*/ false, false,
-        /*reserved*/ true, true
-      };
-
-      for (int idx = 0; idx < bytes.size(); ++idx) {
-        bytes[idx] = 0xFF;
-        if (shouldBeZero[idx]) {
-          Assert::ExpectException<std::invalid_argument>([bytes] {
-            HeaderContent testHeader(bytes);
-          });
-        } else {
-          // If this throws an exception, test will fail.
-          HeaderContent testHeader(bytes);
-        }
-        bytes[idx] = kDefaultPacket[idx];
-      }
-    }
-
     TEST_METHOD(TestConstructorReconstruction) {
       HeaderContent header;
       header.set_use_target(true);
