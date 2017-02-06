@@ -95,6 +95,8 @@ void LifxControl::HandleReceive(std::shared_ptr<udp::endpoint> sender_ptr,
     for (std::size_t idx = 0; idx < payload.size(); ++idx) {
       std::cout << std::to_string(payload[idx]) << " ";
     }
+    std::cout << std::endl;
+    std::cout.flush();
 
     lock_.lock();
     lights_.push_back(Light(io_service_, socket_, sender_ptr->address().to_v4()));
