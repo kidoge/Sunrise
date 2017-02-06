@@ -4,8 +4,8 @@
 using lifx::MessageTypes;
 using lifx::HeaderContent;
 
-uint64_t readLittleEndian(std::vector<uint8_t>::iterator begin_it, 
-                          std::vector<uint8_t>::iterator end_it) {
+uint64_t readLittleEndian(std::vector<uint8_t>::const_iterator begin_it, 
+                          std::vector<uint8_t>::const_iterator end_it) {
   auto it = end_it - 1;
   uint64_t result = 0;
   while (it >= begin_it) {
@@ -22,58 +22,22 @@ void WriteLittleEndian(std::vector<uint8_t>& bytes, uint64_t number, size_t size
   }
 }
 
+void CheckReserved(std::vector<uint8_t>::const_iterator &it, size_t size) {
+  for (int idx = 0; idx < size; ++idx) {
+    if (*it != 0) {
+      throw std::invalid_argument("bytes has invalid format.");
+    }
+    it++;
+  }
+}
+
 HeaderContent::HeaderContent(std::vector<uint8_t> bytes) {
-  // Byte 0 = LSB of protocol
+  auto it = bytes.begin();
+  Init(it);
+}
 
-  uint16_t protocol = ((bytes[1] & 0b1111) << 8) | bytes[0];
-  if (protocol != 0x0400) {
-    throw std::invalid_argument("bytes has invalid format.");
-  }
-
-  // Byte 1, bit 3 = tagged
-  use_target_ = static_cast<bool>((bytes[1] & (~0b00010100)) != 0);
-  
-  // Byte 2 - 5 = source
-  source_ = static_cast<int32_t>(readLittleEndian(bytes.begin() + 2, 
-                                                  bytes.begin() + 6));
-  
-  // Byte 6 - 13 = target
-  target_ = readLittleEndian(bytes.begin() + 6, bytes.begin() + 14);
-
-  // Byte 14 - 19 = reserved
-  for (int idx = 14; idx <= 19; ++idx) {
-    if (bytes[idx] != 0) {
-      throw std::invalid_argument("bytes has invalid format.");
-    }
-  }
-
-  uint8_t byte20 = bytes[20];
-
-  // Byte 20, bit 7 = ack_required
-  ack_required_ = (byte20 & 0b00000010) != 0;
-
-  // Byte 20, bit 8 = res_required
-  res_required_ = (byte20 & 0b00000001) != 0;
-
-  // Byte 21 = sequence
-  sequence_ = static_cast<uint8_t>(bytes[21]);
-
-  // Byte 22 - 29 = reserved
-  for (int idx = 22; idx <= 29; ++idx) {
-    if (bytes[idx] != 0) {
-      throw std::invalid_argument("bytes has invalid format.");
-    }
-  }
-  // Byte 30 - 31 = type
-  message_type_ = static_cast<MessageTypes>(
-    readLittleEndian(bytes.begin() + 30, bytes.begin() + 32));
-
-  // Byte 32 - 33 = reserved
-  for (int idx = 32; idx <= 33; ++idx) {
-    if (bytes[idx] != 0) {
-      throw std::invalid_argument("bytes has invalid format.");
-    }
-  }
+HeaderContent::HeaderContent(std::vector<uint8_t>::const_iterator &it) {
+  Init(it);
 }
 
 std::vector<uint8_t> HeaderContent::GetBytes() const {
@@ -192,4 +156,51 @@ MessageTypes HeaderContent::message_type() const {
 
 void HeaderContent::set_message_type(MessageTypes message_type) {
   message_type_ = message_type;
+}
+
+void HeaderContent::Init(std::vector<uint8_t>::const_iterator &it) {
+  // Byte 0 = LSB of protocol
+
+  uint16_t protocol = ((*(it + 1) & 0b1111) << 8) | *it;
+  if (protocol != 0x0400) {
+    throw std::invalid_argument("bytes has invalid format.");
+  }
+
+  // Byte 1, bit 3 = tagged
+  use_target_ = static_cast<bool>((*(it + 1) & (~0b00010100)) != 0);
+  it += 2;
+
+  // Byte 2 - 5 = source
+  source_ = static_cast<int32_t>(readLittleEndian(it, it + 4));
+  it += 4;
+
+  // Byte 6 - 13 = target
+  target_ = readLittleEndian(it, it + 8);
+  it += 8;
+
+  // Byte 14 - 19 = reserved
+  it += 6;
+
+  uint8_t byte20 = *it;
+  it++;
+
+  // Byte 20, bit 7 = ack_required
+  ack_required_ = (byte20 & 0b00000010) != 0;
+
+  // Byte 20, bit 8 = res_required
+  res_required_ = (byte20 & 0b00000001) != 0;
+
+  // Byte 21 = sequence
+  sequence_ = *it;
+  it++;
+
+  // Byte 22 - 29 = reserved
+  it += 8;
+
+  // Byte 30 - 31 = type
+  message_type_ = static_cast<MessageTypes>(readLittleEndian(it, it + 2));
+  it += 2;
+
+  // Byte 32 - 33 = reserved
+  it += 2;
 }

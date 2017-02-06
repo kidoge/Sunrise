@@ -12,6 +12,8 @@ namespace lifx {
 
     HeaderContent(std::vector<uint8_t> bytes);
 
+    HeaderContent(std::vector<uint8_t>::const_iterator &it);
+
     std::vector<uint8_t> GetBytes() const;
 
     bool use_target() const;
@@ -58,5 +60,7 @@ namespace lifx {
 
     /* protocol header */
     lifx::MessageTypes message_type_ = lifx::kNullMessage; // Type of message
+
+    void Init(std::vector<uint8_t>::const_iterator &it);
   };
 }

@@ -82,9 +82,20 @@ void LifxControl::HandleReceive(std::shared_ptr<udp::endpoint> sender_ptr,
   // Broadcasting will send the packet to the sender as well. We should ignore it.
   if (sender_ptr->address().to_v4() != localhost_addr_) {
     std::cout << sender_ptr->address().to_string() << " responded." << std::endl;
+
+    Packet p(std::vector<uint8_t>(buffer->begin(), buffer->begin() + bytes_transferred));
+    
+
     for (std::size_t idx = 0; idx < bytes_transferred; ++idx) {
       std::cout << std::to_string((*buffer)[idx]) << " ";
     }
+    std::cout.flush();
+    std::cout << std::endl << "payload: " << std::endl;
+    std::vector<uint8_t> payload = p.payload();
+    for (std::size_t idx = 0; idx < payload.size(); ++idx) {
+      std::cout << std::to_string(payload[idx]) << " ";
+    }
+
     lock_.lock();
     lights_.push_back(Light(io_service_, socket_, sender_ptr->address().to_v4()));
     lock_.unlock();
