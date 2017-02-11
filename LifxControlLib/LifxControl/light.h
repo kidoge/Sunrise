@@ -16,10 +16,12 @@ namespace lifx {
     bool operator== (const Light& rhs) const;
     bool operator!= (const Light& rhs) const;
 
+    void TurnOn();
+
   private:
     std::shared_ptr<boost::asio::io_service> service_;
     std::shared_ptr<boost::asio::ip::udp::socket> socket_;
     boost::asio::ip::address_v4 addr_;
-
+    
   };
 }
