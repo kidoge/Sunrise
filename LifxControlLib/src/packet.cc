@@ -9,7 +9,7 @@ Packet::Packet(const std::vector<uint8_t>& bytes) {
   header_ = std::shared_ptr<HeaderContent>(new HeaderContent(it));
   size_t header_size = header_->GetBytes().size();
   payload_ = std::make_shared<std::vector<uint8_t> >();
-  payload_->resize(bytes.size() - header_size);
+  payload_->resize(bytes.size() - header_size - 2);
   std::copy(it, bytes.end(), payload_->begin());
 }
 Packet::Packet(std::shared_ptr<HeaderContent>header,

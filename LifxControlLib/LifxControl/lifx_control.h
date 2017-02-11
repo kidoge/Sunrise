@@ -23,12 +23,18 @@ namespace lifx {
     Light CreateLight(boost::asio::ip::address_v4& light_addr);
 
   private:
+    uint32_t source_;
+
     std::shared_ptr<boost::asio::io_service> io_service_;
     std::shared_ptr<boost::asio::ip::udp::socket> socket_;
     std::vector<Light> lights_;
     std::mutex lock_;
     boost::asio::ip::address_v4 localhost_addr_;
     boost::asio::ip::address_v4 subnet_mask_;
+
+    std::vector<uint8_t> CreatePacket();
+
+    void AddUniqueLight(const Light& light);
 
     void HandleSend(const boost::system::error_code& ec,
                     std::size_t bytes_transferred);

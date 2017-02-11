@@ -20,10 +20,10 @@ using lifx::Light;
 
 using std::shared_ptr;
 
-std::vector<uint8_t> CreatePacket() {
+std::vector<uint8_t> LifxControl::CreatePacket() {
   shared_ptr<HeaderContent> header = std::make_shared<HeaderContent>();
   header->set_use_target(true);
-  header->set_source(0x1);
+  header->set_source(source_);
   header->set_res_required(true);
   header->set_message_type(lifx::kGetVersion);
   Packet packet(header, nullptr);
@@ -34,6 +34,7 @@ LifxControl::LifxControl(const address_v4& localhost_addr,
                          const address_v4& subnet_mask) :
                             localhost_addr_(localhost_addr),
                             subnet_mask_(subnet_mask) {
+  source_ = static_cast<uint32_t>(rand());
   io_service_ = std::make_shared<boost::asio::io_service>();
   socket_ = shared_ptr<udp::socket>(
     new udp::socket(*io_service_, udp::endpoint(udp::v4(), 56700)));
@@ -70,6 +71,17 @@ Light LifxControl::CreateLight(boost::asio::ip::address_v4& light_addr) {
   return Light(io_service_, socket_, light_addr);
 }
 
+void LifxControl::AddUniqueLight(const Light& light) {
+  // TODO: Just use set?
+  for (auto it = lights_.begin(); it != lights_.end(); ++it) {
+    if (*it == light) {
+      return;
+    }
+  }
+
+  lights_.push_back(light);
+}
+
 void LifxControl::HandleSend(const boost::system::error_code& ec,
                                  std::size_t bytes_transferred) {
   // Do nothing...
@@ -81,26 +93,16 @@ void LifxControl::HandleReceive(std::shared_ptr<udp::endpoint> sender_ptr,
                                 std::size_t bytes_transferred) {
   // Broadcasting will send the packet to the sender as well. We should ignore it.
   if (sender_ptr->address().to_v4() != localhost_addr_) {
-    std::cout << sender_ptr->address().to_string() << " responded." << std::endl;
 
     Packet p(std::vector<uint8_t>(buffer->begin(), buffer->begin() + bytes_transferred));
-    
+    if (p.header().source() == source_) {
 
-    for (std::size_t idx = 0; idx < bytes_transferred; ++idx) {
-      std::cout << std::to_string((*buffer)[idx]) << " ";
-    }
-    std::cout.flush();
-    std::cout << std::endl << "payload: " << std::endl;
-    std::vector<uint8_t> payload = p.payload();
-    for (std::size_t idx = 0; idx < payload.size(); ++idx) {
-      std::cout << std::to_string(payload[idx]) << " ";
-    }
-    std::cout << std::endl;
-    std::cout.flush();
+      std::vector<uint8_t> payload = p.payload();
 
-    lock_.lock();
-    lights_.push_back(Light(io_service_, socket_, sender_ptr->address().to_v4()));
-    lock_.unlock();
+      lock_.lock();
+      AddUniqueLight(Light(io_service_, socket_, sender_ptr->address().to_v4()));
+      lock_.unlock();
+    }
   }
   StartReceive();
 }

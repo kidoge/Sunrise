@@ -25,9 +25,13 @@ int main() {
 	LifxControl lifx_control(kLocalhost, kSubnet);
 	vector<Light> lights = lifx_control.Enumerate(seconds(5));
 	
+  for (auto it = lights.begin(); it != lights.end(); ++it) {
+    std::cout << (*it).address() << std::endl;
+  }
 	std::cout << "Total lights: " << lights.size() << std::endl;
 
 	std::cout << "Done" << std::endl;
+  std::cout.flush();
 	getchar();
 	return 0;
 }
