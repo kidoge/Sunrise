@@ -1,6 +1,7 @@
 #include "light.h"
 #include "header_content.h"
 #include "packet.h"
+#include "little_endian_helper.h"
 
 using lifx::Light;
 using lifx::Packet;
@@ -31,11 +32,9 @@ void Light::SetPower(bool power) {
 
   auto payload = std::make_shared<std::vector<uint8_t> >();
   if (power) {
-    payload->push_back(255);
-    payload->push_back(255);
+    WriteLittleEndian(*payload, 0xFFFF, 2);
   } else {
-    payload->push_back(0);
-    payload->push_back(0);
+    WriteLittleEndian(*payload, 0, 2);
   }
 
   Packet packet(hc, payload);

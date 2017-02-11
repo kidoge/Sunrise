@@ -36,6 +36,9 @@
     <ClInclude Include="LifxControl\lifx_control.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LifxControl\little_endian_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\header_content.cc">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\lifx_control.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\little_endian_helper.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

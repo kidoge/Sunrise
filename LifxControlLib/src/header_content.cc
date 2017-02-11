@@ -1,26 +1,9 @@
 #include <exception>
 #include "header_content.h"
+#include "little_endian_helper.h"
 
 using lifx::MessageTypes;
 using lifx::HeaderContent;
-
-uint64_t readLittleEndian(std::vector<uint8_t>::const_iterator begin_it, 
-                          std::vector<uint8_t>::const_iterator end_it) {
-  auto it = end_it - 1;
-  uint64_t result = 0;
-  while (it >= begin_it) {
-    result = result << 8 | (*it);
-    it--;
-  }
-  return result;
-}
-
-void WriteLittleEndian(std::vector<uint8_t>& bytes, uint64_t number, size_t size) {
-  for (size_t byte_idx = 0; byte_idx < size; ++byte_idx) {
-    bytes.push_back(number & 0xFF);
-    number = number >> 8;
-  }
-}
 
 void CheckReserved(std::vector<uint8_t>::const_iterator &it, size_t size) {
   for (int idx = 0; idx < size; ++idx) {
@@ -171,11 +154,11 @@ void HeaderContent::Init(std::vector<uint8_t>::const_iterator &it) {
   it += 2;
 
   // Byte 2 - 5 = source
-  source_ = static_cast<int32_t>(readLittleEndian(it, it + 4));
+  source_ = static_cast<int32_t>(ReadLittleEndian(it, it + 4));
   it += 4;
 
   // Byte 6 - 13 = target
-  target_ = readLittleEndian(it, it + 8);
+  target_ = ReadLittleEndian(it, it + 8);
   it += 8;
 
   // Byte 14 - 19 = reserved
@@ -198,7 +181,7 @@ void HeaderContent::Init(std::vector<uint8_t>::const_iterator &it) {
   it += 8;
 
   // Byte 30 - 31 = type
-  message_type_ = static_cast<MessageTypes>(readLittleEndian(it, it + 2));
+  message_type_ = static_cast<MessageTypes>(ReadLittleEndian(it, it + 2));
   it += 2;
 
   // Byte 32 - 33 = reserved

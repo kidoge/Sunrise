@@ -137,6 +137,7 @@
     <ClInclude Include="LifxControl\header_content.h" />
     <ClInclude Include="LifxControl\light.h" />
     <ClInclude Include="LifxControl\lifx_control.h" />
+    <ClInclude Include="LifxControl\little_endian_helper.h" />
     <ClInclude Include="LifxControl\message_types.h" />
     <ClInclude Include="LifxControl\packet.h" />
     <ClInclude Include="targetver.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="src\header_content.cc" />
     <ClCompile Include="src\light.cc" />
     <ClCompile Include="src\lifx_control.cc" />
+    <ClCompile Include="src\little_endian_helper.cc" />
     <ClCompile Include="src\packet.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
