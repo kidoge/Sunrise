@@ -16,7 +16,7 @@ namespace lifx {
     bool operator== (const Light& rhs) const;
     bool operator!= (const Light& rhs) const;
 
-    void TurnOn();
+    void SetPower(bool power);
 
   private:
     std::shared_ptr<boost::asio::io_service> service_;

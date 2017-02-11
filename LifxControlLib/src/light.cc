@@ -25,12 +25,19 @@ bool Light::operator!= (const Light& rhs) const {
   return !operator==(rhs);
 }
 
-void Light::TurnOn() {
+void Light::SetPower(bool power) {
   auto hc = std::make_shared<HeaderContent>();
   hc->set_message_type(kSetDevicePower);
+
   auto payload = std::make_shared<std::vector<uint8_t> >();
-  payload->push_back(255);
-  payload->push_back(255);
+  if (power) {
+    payload->push_back(255);
+    payload->push_back(255);
+  } else {
+    payload->push_back(0);
+    payload->push_back(0);
+  }
+
   Packet packet(hc, payload);
   std::vector<uint8_t> bytes = packet.getBytes();
   size_t p = socket_->send_to(boost::asio::buffer(bytes), udp::endpoint(addr_, 56700));
