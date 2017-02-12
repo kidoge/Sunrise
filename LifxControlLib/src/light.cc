@@ -41,3 +41,20 @@ void Light::SetPower(bool power) {
   std::vector<uint8_t> bytes = packet.getBytes();
   size_t p = socket_->send_to(boost::asio::buffer(bytes), udp::endpoint(addr_, 56700));
 }
+
+void Light::SetHSBK(double h, double s, double b, uint16_t k, double duration) {
+  auto hc = std::make_shared<HeaderContent>();
+  hc->set_message_type(kSetColor);
+
+  auto payload = std::make_shared<std::vector<uint8_t> >();
+  payload->push_back(0); //Reserved
+  WriteLittleEndian(*payload, static_cast<uint64_t>(h * 0xFFFF), 2);
+  WriteLittleEndian(*payload, static_cast<uint64_t>(s * 0xFFFF), 2);
+  WriteLittleEndian(*payload, static_cast<uint64_t>(b * 0xFFFF), 2);
+  WriteLittleEndian(*payload, static_cast<uint64_t>(k), 2);
+  WriteLittleEndian(*payload, static_cast<uint64_t>(duration * 1000), 4);
+
+  Packet packet(hc, payload);
+  std::vector<uint8_t> bytes = packet.getBytes();
+  size_t p = socket_->send_to(boost::asio::buffer(bytes), udp::endpoint(addr_, 56700));
+}

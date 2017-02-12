@@ -18,6 +18,8 @@ namespace lifx {
 
     void SetPower(bool power);
 
+    void SetHSBK(double h, double s, double b, uint16_t k, double duration);
+
   private:
     std::shared_ptr<boost::asio::io_service> service_;
     std::shared_ptr<boost::asio::ip::udp::socket> socket_;

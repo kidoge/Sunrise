@@ -26,7 +26,8 @@ int main() {
 	vector<Light> lights = lifx_control.Enumerate(seconds(1));
 	
   for (auto it = lights.begin(); it != lights.end(); ++it) {
-    it->SetPower(1);
+    it->SetPower(true);
+    it->SetHSBK(1.0, 0.0, 0.4, 3000, 2.0);
     std::cout << (*it).address() << std::endl;
   }
 	std::cout << "Total lights: " << lights.size() << std::endl;
