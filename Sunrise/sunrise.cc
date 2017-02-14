@@ -3,23 +3,23 @@
 
 #include <vector>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/asio.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
 
-#include <LifxControl/light.h>
 #include <LifxControl/lifx_control.h>
+#include <LifxControl/light.h>
 
 using std::vector;
 
-using boost::posix_time::seconds;
 using boost::asio::ip::address;
 using boost::asio::ip::address_v4;
+using boost::posix_time::seconds;
 
 namespace po = boost::program_options;
 
-using lifx::Light;
 using lifx::LifxControl;
+using lifx::Light;
 
 address_v4 kSubnet(0xFFFFFF00);
 address_v4 kLocalhost(0xC0A80102);
